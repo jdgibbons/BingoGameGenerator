@@ -7,7 +7,8 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 public class BingoFace {
-
+	private static int nextID = 0;
+	private int id;
 	private int rows;
 	private int columns;
 	private int[][] face;
@@ -22,18 +23,19 @@ public class BingoFace {
 	public static void main( String[] args ) {
 		int rows = 5;
 		int columns = 3;
-		int[][] endpoints = { { 1, 15 }, 
-							  { 16, 30 },
-							  { 31, 45 },
-							  { 46, 60 },
-							  { 61, 75 }
-							 };
-		BingoFace face = new BingoFace( rows, columns, endpoints );
-		System.out.println( "rows: " + face.getRows() );
-		System.out.println( "columns: " + face.getColumns() );
-		System.out.println( face.formattedCardFace() );
-		face.generateWinningPaths( face.face, 0 );
-		System.out.println( "count: " + face.count );
+		BingoFace facePlant = new BingoFace( rows, columns );
+//		int[][] endpoints = { { 1, 15 }, 
+//							  { 16, 30 },
+//							  { 31, 45 },
+//							  { 46, 60 },
+//							  { 61, 75 }
+//							 };
+//		BingoFace face = new BingoFace( rows, columns, endpoints );
+//		System.out.println( "rows: " + face.getRows() );
+//		System.out.println( "columns: " + face.getColumns() );
+//		System.out.println( face.formattedCardFace() );
+//		face.generateWinningPaths( face.face, 0 );
+//		System.out.println( "count: " + face.count );
 		
 //		BingoFace face2 = new BingoFace( 10, 7, 225 );
 //		System.out.println( "rows: " + face2.getRows() );
@@ -51,7 +53,8 @@ public class BingoFace {
 	 * @param limits the high and low value of a given row
 	 */
 	public BingoFace( int rows, int columns, int[][] limits ) {
-		if ( limits.length != rows ) return;
+		if ( limits == null || limits.length != rows ) return;
+		this.id = nextID++;
 		this.rows = rows;
 		this.columns = columns;
 		this.limits = limits;
@@ -69,7 +72,8 @@ public class BingoFace {
 	public BingoFace( int rows, int columns, int rowIncrement ) {
 		// make sure that there are enough spaces per row to
 		// account for the number expected
-		if ( rowIncrement < rows ) return;
+		if ( rowIncrement < columns ) return;
+		this.id = nextID++;
 		// initialize the limit array with the top and bottom
 		// values based on the value of rowIncrement
 		int[][] lims = new int[rows][2];
@@ -80,28 +84,43 @@ public class BingoFace {
 		this.rows = rows;
 		this.columns = columns;
 		this.limits = lims;
-		// call the main constructor
 		this.face = generateFace( this.rows, this.columns, this.limits );
+	}
+	
+	/**
+	 * this constructor is for testing purposes
+	 * @param rows
+	 * @param columns
+	 * @param limits
+	 */
+	public BingoFace( int rows, int columns ) {
+		if ( rows != 5 || columns != 3 ) return;
+		this.id = nextID++;
+		this.rows = rows;
+		this.columns = columns;
+		this.limits = new int[this.rows][2];
+		this.limits[0][0] = 1;
+		this.limits[0][1] = 3;
+		this.limits[1][0] = 4;
+		this.limits[1][1] = 6;
+		this.limits[2][0] = 7;
+		this.limits[2][1] = 9;
+		this.limits[3][0] = 10;
+		this.limits[3][1] = 12;
+		this.limits[4][0] = 13;
+		this.limits[4][1] = 15;
+		this.face = new int[5][3];
+		int count = 1;
+		for ( int i = 0; i < 5; i++ ) {
+			for ( int j = 0; j < 3; j++ ) {
+				face[i][j] = count++;
+			}
+		}
 	}
 	
 	
 	public void generateWinningPaths( int[][] bFace, int row ) {
-		for ( int i = 0; i < bFace[0].length; i++ ) {
-			winner[row] = face[row][i];
-			if ( row == bFace.length - 1 ) {
-				row--;
-				count++;
-				System.out.println( "count: " + count );
-//				StringBuilder builder = new StringBuilder();
-//				for ( int j = 0; j < winner.length; j++ ) {
-//					builder.append( String.format( "%02d", winner[row] ) );
-//					builder.append( "-" );
-//				}
-			} else {
-				row++;
-				generateWinningPaths( bFace, row );
-			}
-		}
+		
 	}
 	
 	/**
@@ -174,5 +193,13 @@ public class BingoFace {
 		return columns;
 	}
 	
-	
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		String separator = System.getProperty( "line.separator" );
+		builder.append( "Face ID: " + id );
+		builder.append( separator );
+		
+		
+		return builder.toString();
+	}
 }
